@@ -71,7 +71,7 @@ import com.holub.tools.ArrayIterator;
 	 * Create a table with the given name and columns.
 	 * 
 	 * @param tableName the name of the table.
-	 * @param an        array of Strings that specify the column names.
+	 * @param columnNames array of Strings that specify the column names.
 	 */
 	public ConcreteTable(String tableName, String[] columnNames) {
 		this.tableName = tableName;
@@ -808,9 +808,13 @@ import com.holub.tools.ArrayIterator;
 																				// "people" table will
 																				// fail if this operation fails.
 
+			System.out.println("exporter test");
 			Writer out = new FileWriter("people");
 			people.export(new CSVExporter(out));
+			Writer htmlOut = new FileWriter("people.html");
+			people.export(new HTMLExporter(htmlOut));
 			out.close();
+			htmlOut.close();
 
 			Reader in = new FileReader("people");
 			people = new ConcreteTable(new CSVImporter(in));
