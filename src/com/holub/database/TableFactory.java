@@ -46,9 +46,8 @@ public class TableFactory
 	/** Create a table from information provided by a
 	 *	{@link Table.Importer} object.
 	 */
-	public static Table create( Table.Importer importer ) 
-												throws IOException
-	{	return new ConcreteTable( importer );
+	public static Table create( Table.Importer importer )
+			throws IOException, NotWellFormedException {	return new ConcreteTable( importer );
 	}
 
 	/** This convenience method is equivalent to
@@ -56,8 +55,7 @@ public class TableFactory
 	 *
 	 *	@see #load(String,File)
 	 */
-	public static Table load( String name ) throws IOException
-	{	return load( name, new File(".") );
+	public static Table load( String name ) throws IOException, NotWellFormedException {	return load( name, new File(".") );
 	} 
 
 	/** This convenience method is equivalent to
@@ -66,11 +64,10 @@ public class TableFactory
 	 *	@see #load(String,File)
 	 */
 	public static Table load( String name, String location )
-												throws IOException
-	{	return load( name, new File(location) );
+			throws IOException, NotWellFormedException {	return load( name, new File(location) );
 	} 
 
-	/* Create a table from some form stored on the disk.
+	/** Create a table from some form stored on the disk.
 	 * <p>
 	 * At present, the filename extension is used to determine
 	 * the data format, and only a comma-separated-value file
@@ -78,17 +75,17 @@ public class TableFactory
 	 * Eventually, other extensions (like .xml) will be
 	 * recognized.
 	 *
-	 * @param the file name. The table name is the string to the
+	 * @param name the file name. The table name is the string to the
 	 * 			left of the extension. For example, if the file
 	 * 			is "foo.csv," then the table name is "foo."
-	 * @param the directory within which the file is found.
+	 * @param directory the directory within which the file is found.
 	 *
 	 * @throws java.io.IOException if the filename extension is not
 	 * 			recognized.
 	 */
 	public static Table load( String name, File directory )
-													throws IOException
-	{
+			throws IOException, NotWellFormedException {
+		// 특정 구상 클래스에 의존적. HTMLExporter, Importer 등 확장에 좋지 않다.
 		if( !(name.endsWith( ".csv" ) || name.endsWith( ".CSV" )) )
 			throw new java.io.IOException(
 					 "Filename (" +name+ ") does not end in "

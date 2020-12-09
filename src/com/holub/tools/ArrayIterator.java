@@ -73,4 +73,9 @@ public final class ArrayIterator implements Iterator
 	public Object[] toArray()
 	{	return (Object[]) items.clone();
 	}
-}	
+
+	@Override
+	public String toString() {
+		return items[position].toString();
+	}
+}

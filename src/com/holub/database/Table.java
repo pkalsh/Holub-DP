@@ -40,6 +40,7 @@ public interface Table extends Serializable, Cloneable
 {
 	/** Return a shallow copy of the table (the contents are not
 	 *  copied.
+	 *  얕은 복사를 한다. 내용은 복사하지 않고
 	 */
 	Object clone() throws CloneNotSupportedException;
 
@@ -244,6 +245,8 @@ public interface Table extends Serializable, Cloneable
 	 */
 	Cursor rows();
 
+	Iterator getColumns();
+
 	/** Build a representation of the Table using the
 	 *  specified Exporter. Create an object from an
 	 *  {@link Table.Importer} using the constructor with an
@@ -282,7 +285,7 @@ public interface Table extends Serializable, Cloneable
 	 *	</ul>
 	 */
 	public interface Importer				//{=Table.Importer}
-	{	void 	 startTable()		throws IOException;
+	{	void 	 startTable() throws IOException, NotWellFormedException;
 		String   loadTableName()	throws IOException;
 		int 	 loadWidth()		throws IOException;
 		Iterator loadColumnNames()	throws IOException;

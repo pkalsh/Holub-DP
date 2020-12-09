@@ -77,6 +77,34 @@ import com.holub.tools.ArrayIterator;
 		this.tableName = tableName;
 		this.columnNames = (String[]) columnNames.clone();
 	}
+	
+	public ConcreteTable(String tableName, Table primary, Table[] otherTables) {
+		this.tableName = tableName;
+		ArrayList<String> tableColumns = new ArrayList<>();
+		Iterator primaryColumns = primary.getColumns();
+		while (primaryColumns.hasNext()) {
+			System.out.println(primaryColumns);
+			if (!tableColumns.contains(primaryColumns.toString())) {
+				tableColumns.add(primaryColumns.toString());
+			}
+			primaryColumns.next();
+		}
+
+		for (int i = 0; i < otherTables.length; i++) {
+			Iterator columns = otherTables[i].getColumns();
+			while (columns.hasNext()) {
+				if (!tableColumns.contains(columns.toString())) {
+					tableColumns.add(columns.toString());
+				}
+				columns.next();
+			}
+
+		}
+
+		columnNames = new String[tableColumns.size()];
+		for (int i=0 ; i<columnNames.length; i++) { columnNames[i] = tableColumns.get(i); }
+
+	}
 
 	/**********************************************************************
 	 * Return the index of the named column. Throw an IndexOutOfBoundsException if
@@ -197,6 +225,11 @@ import com.holub.tools.ArrayIterator;
 	//
 	public Cursor rows() {
 		return new Results();
+	}
+
+	@Override
+	public Iterator getColumns() {
+		return new ArrayIterator(columnNames);
 	}
 
 	// ----------------------------------------------------------------------
@@ -439,6 +472,7 @@ import com.holub.tools.ArrayIterator;
 		return new UnmodifiableTable(resultTable);
 	}
 
+
 	/**
 	 * This version of select does a join
 	 */
@@ -460,7 +494,10 @@ import com.holub.tools.ArrayIterator;
 		// Create places to hold the result of the join and to hold
 		// iterators for each table involved in the join.
 
-		Table resultTable = new ConcreteTable(null, requestedColumns);
+		Table resultTable = null;
+		if (requestedColumns != null) {	resultTable = new ConcreteTable(null, requestedColumns);}
+		else { resultTable = new ConcreteTable(null, this, otherTables); }
+
 		Cursor[] envelope = new Cursor[allTables.length];
 
 		// Recursively compute the Cartesian product, adding to the

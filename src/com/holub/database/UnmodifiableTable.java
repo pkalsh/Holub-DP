@@ -83,6 +83,7 @@ public class UnmodifiableTable implements Table
 	public Table select(Selector w,String[] r,Table[] o)
 	{	return wrapped.select( w, r, o );
 	}
+
 	public Table select(Selector where, String[] requestedColumns)
 	{	return wrapped.select(where, requestedColumns );
 	}
@@ -95,9 +96,15 @@ public class UnmodifiableTable implements Table
 	public Table select(Selector w, Collection r)
 	{	return wrapped.select(w, r);
 	}
-	public Cursor rows()
+
+    public Cursor rows()
 	{	return wrapped.rows();
 	}
+
+	public Iterator getColumns()
+	{	return wrapped.getColumns();
+	}
+
 	public void  export(Table.Exporter exporter) throws IOException
 	{	wrapped.export(exporter);
 	}
