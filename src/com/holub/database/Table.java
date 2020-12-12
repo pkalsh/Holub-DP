@@ -40,7 +40,6 @@ public interface Table extends Serializable, Cloneable
 {
 	/** Return a shallow copy of the table (the contents are not
 	 *  copied.
-	 *  얕은 복사를 한다. 내용은 복사하지 않고
 	 */
 	Object clone() throws CloneNotSupportedException;
 
@@ -244,8 +243,6 @@ public interface Table extends Serializable, Cloneable
 	/** Return an iterator across the rows of the current table.
 	 */
 	Cursor rows();
-
-	Iterator getColumns();
 
 	/** Build a representation of the Table using the
 	 *  specified Exporter. Create an object from an

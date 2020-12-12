@@ -81,24 +81,25 @@ import com.holub.tools.ArrayIterator;
 	public ConcreteTable(String tableName, Table primary, Table[] otherTables) {
 		this.tableName = tableName;
 		ArrayList<String> tableColumns = new ArrayList<>();
-		Iterator primaryColumns = primary.getColumns();
-		while (primaryColumns.hasNext()) {
-			System.out.println(primaryColumns);
-			if (!tableColumns.contains(primaryColumns.toString())) {
-				tableColumns.add(primaryColumns.toString());
+		Cursor rows = primary.rows();
+		rows.advance();
+
+		for (int idx = 0; idx < rows.columnCount(); idx++) {
+			if (!tableColumns.contains(rows.columnName(idx))) {
+				tableColumns.add(rows.columnName(idx));
 			}
-			primaryColumns.next();
 		}
 
-		for (int i = 0; i < otherTables.length; i++) {
-			Iterator columns = otherTables[i].getColumns();
-			while (columns.hasNext()) {
-				if (!tableColumns.contains(columns.toString())) {
-					tableColumns.add(columns.toString());
-				}
-				columns.next();
-			}
+		for (int tableNum = 0; tableNum < otherTables.length; tableNum++) {
+			Table table = otherTables[tableNum];
+			Cursor otherRows = table.rows();
+			otherRows.advance();
 
+			for (int idx = 0; idx < otherRows.columnCount(); idx++) {
+				if (!tableColumns.contains(otherRows.columnName(idx))) {
+					tableColumns.add(otherRows.columnName(idx));
+				}
+			}
 		}
 
 		columnNames = new String[tableColumns.size()];
@@ -225,11 +226,6 @@ import com.holub.tools.ArrayIterator;
 	//
 	public Cursor rows() {
 		return new Results();
-	}
-
-	@Override
-	public Iterator getColumns() {
-		return new ArrayIterator(columnNames);
 	}
 
 	// ----------------------------------------------------------------------
