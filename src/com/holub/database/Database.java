@@ -1419,7 +1419,7 @@ public final class Database
 		// table names; use these names to get the actual Table
 		// objects.
 
-		Table primary = (Table) tables.get( (String) tableNames.next() );
+		SelectInterface primary = (Table) tables.get( (String) tableNames.next() );
 
 		List participantsInJoin = new ArrayList();
 		while( tableNames.hasNext() )
@@ -1449,9 +1449,12 @@ public final class Database
 			};
 
 		try
-		{
-			Table result = primary.select(isDistinct, selector, columns, participantsInJoin);
+		{	Table result = null;
+			if (isDistinct == true) {
+				primary = new DistinctSelect(primary);
+			}
 
+			result = primary.select(selector, columns, participantsInJoin);
 
 			// If this is a "SELECT INTO <table>" request, remove the 
 			// returned table from the UnmodifiableTable wrapper, give
