@@ -36,7 +36,7 @@ import com.holub.database.Selector;
  * @include /etc/license.txt
  */
 
-public interface Table extends Serializable, Cloneable
+public interface Table extends Serializable, Cloneable, SelectInterface
 {
 	/** Return a shallow copy of the table (the contents are not
 	 *  copied.
@@ -114,6 +114,8 @@ public interface Table extends Serializable, Cloneable
 	 */
 
 	int  delete( Selector where );
+
+	public boolean contains(Object[] values);
 
 	/** begin a transaction */
 	public void begin();
@@ -212,17 +214,18 @@ public interface Table extends Serializable, Cloneable
 	 * 		product of this table and the <code>other</code> table
 	 * 		that were accepted by the {@link Selector}.
 	 */
+	// 기능의 확장에 인터페이스를 그대로 유지하면서 유연하게 대처할 수 있는 방법은?
 
-	Table select(boolean isDistinct, Selector where, String[] requestedColumns, Table[] other);
+	Table select( Selector where, String[] requestedColumns, Table[] other);
 
 	/** A more efficient version of
 	 * <code>select(where, requestedColumns, null);</code>
 	 */
-	Table select(boolean isDistinct, Selector where, String[] requestedColumns );
+	Table select( Selector where, String[] requestedColumns );
 
 	/** A more efficient version of <code>select(where, null, null);</code>
 	 */
-	Table select(boolean isDistinct, Selector where);
+	Table select( Selector where);
 
 	/** A convenience method that translates Collections to arrays, then
 	 *  calls {@link #select(boolean,Selector,String[],Table[])};
@@ -232,13 +235,13 @@ public interface Table extends Serializable, Cloneable
 	 *				the current one for the purposes of this SELECT
 	 *				operation.
 	 */
-	Table select(boolean isDistinct, Selector where, Collection requestedColumns,
+	Table select( Selector where, Collection requestedColumns,
 												Collection other);
 
 	/** Convenience method, translates Collection to String array, then
 	 *  calls String-array version.
 	 */
-	Table select(boolean isDistinct, Selector where, Collection requestedColumns );
+	Table select( Selector where, Collection requestedColumns );
 
 	/** Return an iterator across the rows of the current table.
 	 */

@@ -431,6 +431,26 @@ import com.holub.tools.ArrayIterator;
 		return deleted;
 	}
 
+	// is there any same row for values, Object array
+	@Override
+	public boolean contains(Object[] values) {
+		Results currentRow = (Results) rows();
+		int columnCount = currentRow.columnCount();
+		if (columnCount != values.length) return false;
+
+		while (currentRow.advance()) {
+			Iterator it = currentRow.columns();
+			for (int idx = 0; idx < values.length; idx++) {
+				Object nextIt = it.next();
+				if (nextIt.equals(values[idx]) == false) {
+					break;
+				}
+				if (it.hasNext() == false) return true;
+			}
+		}
+		return false;
+	}
+
 	// @select-start
 	// ----------------------------------------------------------------------
 	public Table select(Selector where) {
