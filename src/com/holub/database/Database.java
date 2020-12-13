@@ -309,7 +309,7 @@ public final class Database
 				}
 				return desiredTable;
 			}
-			catch( IOException e )
+			catch(IOException | NotWellFormedException e )
 			{	// Can't use verify(...) or error(...) here because the
 				// base-class "get" method doesn't throw any exceptions.
 				// Kludge a runtime-exception toss. Call in.failure()
@@ -378,25 +378,36 @@ public final class Database
 		STAR		= tokens.create( "'*" 		),
 		SLASH		= tokens.create( "'/" 		),
 		AND			= tokens.create( "'AND"		),
+		AVG			= tokens.create( "'AVG"     ),
 		BEGIN		= tokens.create( "'BEGIN"	),
+		BY			= tokens.create( "'BY"      ),
 		COMMIT		= tokens.create( "'COMMIT"	),
+		COUNT		= tokens.create( "'COUNT"   ),
 		CREATE		= tokens.create( "'CREATE"	),
 		DATABASE	= tokens.create( "'DATABASE"),
 		DELETE		= tokens.create( "'DELETE"	),
+		DISTINCT    = tokens.create( "'DISTINCT"),
 		DROP		= tokens.create( "'DROP"	),
 		DUMP		= tokens.create( "'DUMP"	),
 		FROM		= tokens.create( "'FROM"	),
 		INSERT 		= tokens.create( "'INSERT"	),
 		INTO 		= tokens.create( "'INTO"	),
+		JOIN		= tokens.create( "'JOIN"    ),
 		KEY 		= tokens.create( "'KEY"		),
+		LEFT		= tokens.create( "'LEFT"    ),
 		LIKE		= tokens.create( "'LIKE"	),
 		NOT 		= tokens.create( "'NOT"		),
 		NULL		= tokens.create( "'NULL"	),
 		OR			= tokens.create( "'OR"		),
+		ORDER		= tokens.create( "'ORDER"   ),
+		ON			= tokens.create( "'ON"      ),
+		OUTER		= tokens.create( "'OUTER"   ),
 		PRIMARY		= tokens.create( "'PRIMARY"	),
+		RIGHT		= tokens.create( "'RIGHT"   ),
 		ROLLBACK	= tokens.create( "'ROLLBACK"),
 		SELECT		= tokens.create( "'SELECT"	),
 		SET			= tokens.create( "'SET"		),
+		SUM			= tokens.create( "'SUM"     ),
 		TABLE		= tokens.create( "'TABLE"	),
 		UPDATE		= tokens.create( "'UPDATE"	),
 		USE			= tokens.create( "'USE"		),
@@ -796,7 +807,10 @@ public final class Database
 			affectedRows = doDelete( tableName, expr() );
 		}
 		else if( in.matchAdvance(SELECT) != null )
-		{	List columns = idList();
+		{	boolean isDistinct = false;
+			if( in.matchAdvance(DISTINCT) != null )
+				isDistinct = true;
+			List columns = idList();
 
 			String into = null;
 			if( in.matchAdvance(INTO) != null )
@@ -807,7 +821,7 @@ public final class Database
 
 			Expression where = (in.matchAdvance(WHERE) == null)
 								? null : expr();
-			Table result = doSelect(columns, into,
+			Table result = doSelect(isDistinct, columns, into,
 								requestedTableNames, where );
 			return result;
 		}
@@ -1389,10 +1403,10 @@ public final class Database
 	//======================================================================
 	// Workhorse methods called from the parser.
 	//
-	private Table doSelect( List columns, String into,
-										List requestedTableNames,
-										final Expression where )
-										throws ParseFailure
+	private Table doSelect( boolean isDistinct, List columns, String into,
+															 List requestedTableNames,
+															 final Expression where )
+															 throws ParseFailure
 	{
 
 		Iterator tableNames = requestedTableNames.iterator();
@@ -1435,7 +1449,9 @@ public final class Database
 			};
 
 		try
-		{	Table result = primary.select(selector, columns, participantsInJoin);
+		{
+			Table result = primary.select(isDistinct, selector, columns, participantsInJoin);
+
 
 			// If this is a "SELECT INTO <table>" request, remove the 
 			// returned table from the UnmodifiableTable wrapper, give
