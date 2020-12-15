@@ -33,7 +33,7 @@ import java.io.*;
  */
 
 public class TableFactory
-{	
+{
 	/** Create an empty table with the specified columns.
 	 *  @param name	the table name
 	 *  @param columns names of all the columns
@@ -83,16 +83,25 @@ public class TableFactory
 	 * @throws java.io.IOException if the filename extension is not
 	 * 			recognized.
 	 */
+
 	public static Table load( String name, File directory )
 			throws IOException, NotWellFormedException {
-		// 특정 구상 클래스에 의존적. HTMLExporter, Importer 등 확장에 좋지 않다.
-		if( !(name.endsWith( ".csv" ) || name.endsWith( ".CSV" )) )
+
+		int dotPosition = name.indexOf('.');
+		String fileExtensionName = name.substring(dotPosition).toLowerCase();
+
+		if( !fileExtensionName.equals(".csv") && !fileExtensionName.equals(".xml"))
 			throw new java.io.IOException(
-					 "Filename (" +name+ ") does not end in "
-					+"supported extension (.csv)" );
+					"Filename (" +name+ ") does not end in "
+							+"supported extension (.csv) or (.xml)" );
 
 		Reader in = new FileReader( new File( directory, name ));
-		Table loaded = new ConcreteTable( new CSVImporter( in ));
+
+		Table loaded;
+		if (fileExtensionName.equals(".csv"))
+			loaded = new ConcreteTable( new CSVImporter( in ));
+		else
+			loaded = new ConcreteTable( new XMLImporter( in ));
 		in.close();
 		return loaded;
 	}
