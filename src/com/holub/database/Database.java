@@ -673,8 +673,7 @@ public final class Database
 	 *  @see #affectedRows()
 	 */
 
-	public Table execute( String expression ) throws IOException, ParseFailure
-	{	try
+	public Table execute( String expression ) throws IOException, ParseFailure {	try
 		{	this.expression   = expression;
 			in				  = new Scanner(tokens, expression);
 			in.advance();	// advance to the first token.
@@ -727,8 +726,7 @@ public final class Database
 	 * @see #dropTable
 	 * @see #useDatabase
 	 */
-	private Table statement() throws ParseFailure, IOException
-	{
+	private Table statement() throws ParseFailure, IOException {
 		affectedRows = 0;	// is modified by UPDATE, INSERT, DELETE
 
 		// These productions map to public method calls:
@@ -1431,8 +1429,7 @@ public final class Database
 															 List requestedTableNames,
 															 final Expression where,
 															 Map<String, Boolean> orderParams)
-															 throws ParseFailure
-	{
+			throws ParseFailure {
 
 		Iterator tableNames = requestedTableNames.iterator();
 
@@ -1484,6 +1481,7 @@ public final class Database
 			}
 
 			result = primary.select(selector, columns, participantsInJoin);
+
 
 			// If this is a "SELECT INTO <table>" request, remove the 
 			// returned table from the UnmodifiableTable wrapper, give
@@ -1588,8 +1586,7 @@ public final class Database
 	//@workhorse-end
 	//--------------------------------------------------------------
 	public static class Test
-	{	public static void main(String[] args) throws IOException, ParseFailure
-		{	Database theDatabase = new Database();
+	{	public static void main(String[] args) throws IOException, ParseFailure {	Database theDatabase = new Database();
 
 			// Read a sequence of SQL statements in from the file
 			// Database.test.sql and execute them.

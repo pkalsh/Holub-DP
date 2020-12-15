@@ -25,6 +25,8 @@
  *    in any of this code.
  */
 package com.holub.database;
+import com.holub.database.visitors.TableVisitor;
+
 import java.io.*;
 import java.util.*;
 
@@ -72,6 +74,10 @@ public class UnmodifiableTable implements Table
 	public int  update(Selector w				 ){	illegal(); return 0;}
 	public int  delete( Selector w				 ){	illegal(); return 0;}
 
+	public boolean contains(Object[] values) {
+		return wrapped.contains(values);
+	}
+
 	public void begin	 (			 ){ illegal(); }
 	public void commit	 (boolean all){ illegal(); }
 	public void rollback (boolean all){ illegal(); }
@@ -80,6 +86,9 @@ public class UnmodifiableTable implements Table
 	{	throw new UnsupportedOperationException();
 	}
 
+	public Table accept(TableVisitor tableVisitor)
+	{	return tableVisitor.visit((ConcreteTable)wrapped);
+	}
 	public Table select(Selector w,String[] r,Table[] o)
 	{	return wrapped.select( w, r, o );
 	}
@@ -101,9 +110,6 @@ public class UnmodifiableTable implements Table
 	{	return wrapped.rows();
 	}
 
-	public Iterator getColumns()
-	{	return wrapped.getColumns();
-	}
 
 	public void  export(Table.Exporter exporter) throws IOException
 	{	wrapped.export(exporter);
