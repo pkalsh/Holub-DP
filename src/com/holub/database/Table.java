@@ -29,6 +29,7 @@ package com.holub.database;
 import java.io.*;
 import java.util.*;
 import com.holub.database.Selector;
+import com.holub.database.visitors.TableVisitor;
 
 /** A table is a database-like table that provides support for
  *  queries.
@@ -155,6 +156,9 @@ public interface Table extends Serializable, Cloneable, SelectInterface
 	 */
 	public static final boolean ALL	= true;
 
+	// Visitor pattern extension
+	public Table accept(TableVisitor visitor);
+
 	/*** **********************************************************************
 	 *  Create an unmodifiable table that contains selected rows
 	 *  from the current table. The {@link Selector} argument
@@ -214,7 +218,6 @@ public interface Table extends Serializable, Cloneable, SelectInterface
 	 * 		product of this table and the <code>other</code> table
 	 * 		that were accepted by the {@link Selector}.
 	 */
-	// 기능의 확장에 인터페이스를 그대로 유지하면서 유연하게 대처할 수 있는 방법은?
 
 	Table select( Selector where, String[] requestedColumns, Table[] other);
 
@@ -228,7 +231,7 @@ public interface Table extends Serializable, Cloneable, SelectInterface
 	Table select( Selector where);
 
 	/** A convenience method that translates Collections to arrays, then
-	 *  calls {@link #select(boolean,Selector,String[],Table[])};
+	 *  calls {@link #select(Selector,String[],Table[])};
 	 *  @param requestedColumns a collection of String objects
 	 *  			representing the desired columns.
 	 *	@param other a collection of additional Table objects to join to

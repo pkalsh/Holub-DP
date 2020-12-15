@@ -28,6 +28,8 @@ package com.holub.database;
 
 import java.io.*;
 import java.util.*;
+
+import com.holub.database.visitors.TableVisitor;
 import com.holub.tools.ArrayIterator;
 
 /**
@@ -48,7 +50,7 @@ import com.holub.tools.ArrayIterator;
  * @include /etc/license.txt
  */
 
-/* package */ class ConcreteTable implements Table {
+/* package */ public class ConcreteTable implements Table {
 	// Supporting clone() complicates the following declarations. In
 	// particular, the fields can't be final because they're modified
 	// in the clone() method. Also, the rows field has to be declared
@@ -107,11 +109,20 @@ import com.holub.tools.ArrayIterator;
 
 	}
 
+	/*********************************************************************
+	 * for visitor
+	 */
+	public Table accept(TableVisitor tableVisitor) {
+		return tableVisitor.visit(this);
+	}
+
+	public LinkedList getRowSet() { return rowSet; }
+
 	/**********************************************************************
 	 * Return the index of the named column. Throw an IndexOutOfBoundsException if
 	 * the column doesn't exist.
 	 */
-	private int indexOf(String columnName) {
+	public int indexOf(String columnName) {
 		for (int i = 0; i < columnNames.length; ++i)
 			if (columnNames[i].equals(columnName))
 				return i;

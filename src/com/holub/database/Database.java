@@ -378,6 +378,7 @@ public final class Database
 		STAR		= tokens.create( "'*" 		),
 		SLASH		= tokens.create( "'/" 		),
 		AND			= tokens.create( "'AND"		),
+		ASC			= tokens.create( "'ASC"     ),
 		AVG			= tokens.create( "'AVG"     ),
 		BEGIN		= tokens.create( "'BEGIN"	),
 		BY			= tokens.create( "'BY"      ),
@@ -386,6 +387,7 @@ public final class Database
 		CREATE		= tokens.create( "'CREATE"	),
 		DATABASE	= tokens.create( "'DATABASE"),
 		DELETE		= tokens.create( "'DELETE"	),
+		DESC		= tokens.create( "'DESC"    ),
 		DISTINCT    = tokens.create( "'DISTINCT"),
 		DROP		= tokens.create( "'DROP"	),
 		DUMP		= tokens.create( "'DUMP"	),
@@ -821,8 +823,30 @@ public final class Database
 
 			Expression where = (in.matchAdvance(WHERE) == null)
 								? null : expr();
+
+			Map<String, Boolean> orderParams = new LinkedHashMap<>();
+			if( in.matchAdvance(ORDER) != null)
+			{	in.required(BY);
+				String id;
+				while( (id = in.required(IDENTIFIER)) != null )
+				{
+					if( in.matchAdvance(DESC) != null)
+					{	orderParams.put(id, Boolean.FALSE);
+					}
+					else if( in.matchAdvance(ASC) != null)
+					{	orderParams.put(id, Boolean.TRUE);
+					}
+					else
+					{	orderParams.put(id, Boolean.TRUE);
+					}
+
+					if( in.matchAdvance(COMMA) == null)
+						break;
+				}
+			}
+
 			Table result = doSelect(isDistinct, columns, into,
-								requestedTableNames, where );
+								requestedTableNames, where, orderParams );
 			return result;
 		}
 		else
@@ -1405,7 +1429,8 @@ public final class Database
 	//
 	private Table doSelect( boolean isDistinct, List columns, String into,
 															 List requestedTableNames,
-															 final Expression where )
+															 final Expression where,
+															 Map<String, Boolean> orderParams)
 															 throws ParseFailure
 	{
 
@@ -1452,6 +1477,10 @@ public final class Database
 		{	Table result = null;
 			if (isDistinct == true) {
 				primary = new DistinctSelect(primary);
+			}
+
+			if (orderParams.size() > 0) {
+				primary = new OrderBySelect(primary, orderParams);
 			}
 
 			result = primary.select(selector, columns, participantsInJoin);
