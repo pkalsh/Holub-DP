@@ -119,6 +119,20 @@ class ConcreteTableTest {
     }
 
     @Test
+    void orderBySelect() throws IOException, ParseFailure {
+        Table actual = TableFactory.create(null,
+                new String[] {"first", "last", "addrId", "street", "city", "state", "zip" });
+        Table expected = database.execute("SELECT * FROM name, address " +
+                "WHERE name.addrId = address.addrId ORDER BY first");
+
+        actual.insert(new Object[] { "Allen", "Holub", "0", "12 MyStreet", "Berkeley", "CA", "99999"});
+        actual.insert(new Object[] { "Fred",  "Flintstone", "1", "34 Quarry Ln.", "Bedrock", "XX", "00000" });
+        actual.insert(new Object[] { "Wilma", "Flintstone", "1", "34 Quarry Ln.", "Bedrock", "XX", "00000" });
+
+        assertEquals(expected.toString(), actual.toString());
+    }
+
+    @Test
     void contains() {
         assertTrue(people.contains(new Object[] { "Holub", "Allen", "0" }) == true);
         assertTrue(people.contains(new Object[] { "Dongmin", "Lee", "1" }) == false);
