@@ -116,8 +116,6 @@ import com.holub.tools.ArrayIterator;
 		return tableVisitor.visit(this);
 	}
 
-	public LinkedList getRowSet() { return rowSet; }
-
 	/**********************************************************************
 	 * Return the index of the named column. Throw an IndexOutOfBoundsException if
 	 * the column doesn't exist.
