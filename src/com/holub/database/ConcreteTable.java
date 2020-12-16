@@ -160,8 +160,7 @@ import com.holub.tools.ArrayIterator;
 		exporter.startTable();
 		exporter.storeMetadata(tableName, columnNames.length, rowSet.size(), new ArrayIterator(columnNames));
 
-		for (Iterator i = rowSet.iterator(); i.hasNext();)
-			exporter.storeRow(new ArrayIterator((Object[]) i.next()));
+		for (Object o : rowSet) exporter.storeRow(new ArrayIterator((Object[]) o));
 
 		exporter.endTable();
 		isDirty = false;
